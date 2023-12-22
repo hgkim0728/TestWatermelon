@@ -1,11 +1,11 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class Dongle : MonoBehaviour, IDragHandler, IDropHandler
 {
-    [SerializeField, Tooltip("µ¿±ÛÀÌ ¹øÈ£")] private int dongleIndex = 0;
+    [SerializeField, Tooltip("ë™ê¸€ì´ ë²ˆí˜¸")] private int dongleIndex = 0;
 
     private GameManager gameManager;
     private Rigidbody2D rb;
@@ -24,8 +24,8 @@ public class Dongle : MonoBehaviour, IDragHandler, IDropHandler
 
             if(idx == dongleIndex)
             {
-                // ÇÑ ´Ü°è À§ÀÇ µ¿±Û·Î ±³Ã¼
-                // Á¡¼ö È¹µæ
+                // í•œ ë‹¨ê³„ ìœ„ì˜ ë™ê¸€ë¡œ êµì²´
+                // ì ìˆ˜ íšë“
             }
         }
     }
@@ -46,16 +46,16 @@ public class Dongle : MonoBehaviour, IDragHandler, IDropHandler
     }
 
     /// <summary>
-    /// µå·¡±×µÉ ¶§ ÀÛµ¿
+    /// ë“œë˜ê·¸ë  ë•Œ ì‘ë™
     /// </summary>
     /// <param name="eventData"></param>
     public void OnDrag(PointerEventData eventData)
     {
-        // ÇÃ·§Æ÷¸Ó °ÔÀÓÀ» Âü°íÇØ¼­ ¿Ï¼º
+        // í”Œë«í¬ë¨¸ ê²Œì„ì„ ì°¸ê³ í•´ì„œ ì™„ì„±
     }
 
     /// <summary>
-    /// µå·ÓµÉ ¶§ ÀÛµ¿
+    /// ë“œë¡­ë  ë•Œ ì‘ë™
     /// </summary>
     /// <param name="eventData"></param>
     /// <exception cref="System.NotImplementedException"></exception>
@@ -64,5 +64,5 @@ public class Dongle : MonoBehaviour, IDragHandler, IDropHandler
         rb.gravityScale = 1;
     }
 
-    // ½´ÆÃ °ÔÀÓ Âü°íÇØ¼­ µ¿±ÛÀÌ È­¸é ¹ÛÀ¸·Î ³ª°¡Áö ¸øÇÏ°Ô ¸·±â
+    // ìŠˆíŒ… ê²Œì„ ì°¸ê³ í•´ì„œ ë™ê¸€ì´ í™”ë©´ ë°–ìœ¼ë¡œ ë‚˜ê°€ì§€ ëª»í•˜ê²Œ ë§‰ê¸°
 }

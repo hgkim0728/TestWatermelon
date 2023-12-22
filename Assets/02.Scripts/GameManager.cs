@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,7 +6,7 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
 
-    [SerializeField, Tooltip("µ¿±ÛÀÌ ¸®½ºÆ®")] List<GameObject> listDongleObj;
+    [SerializeField, Tooltip("ë™ê¸€ì´ ë¦¬ìŠ¤íŠ¸")] List<GameObject> listDongleObj;
 
     void Awake()
     {
