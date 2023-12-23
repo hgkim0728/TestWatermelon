@@ -87,6 +87,12 @@ public class GameManager : MonoBehaviour
         spawn = false;
     }
 
+    /// <summary>
+    /// 같은 동글이끼리 충돌했을 때 호출
+    /// 한 단계 위의 동글이로 교체
+    /// </summary>
+    /// <param name="_dongle1">이 함수를 호출한 동글이</param>
+    /// <param name="_dongle2">호출한 동글이와 충돌한 동글이</param>
     public void SumDongle(GameObject _dongle1, GameObject _dongle2)
     {
         if (sumDongles[0] != null)
