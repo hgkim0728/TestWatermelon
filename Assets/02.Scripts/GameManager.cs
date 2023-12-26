@@ -7,8 +7,8 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance;
 
     [SerializeField, Tooltip("동글이 리스트")] List<GameObject> listDongleObj;
-
     [SerializeField, Tooltip("이번에 떨어뜨릴 동글")] private GameObject curDongle;
+    [SerializeField, Tooltip("동글 오브젝트가 들어갈 레이어")] private Transform layerDongle;
     private Dongle curDongleSc;
     GameObject[] sumDongles = new GameObject[2];
 
@@ -61,9 +61,30 @@ public class GameManager : MonoBehaviour
 
         Vector2 mPos = Input.mousePosition;
         Vector2 pos = mainCam.ScreenToWorldPoint(mPos);
-        curDongle.transform.position = new Vector2(pos.x, curDongle.transform.position.y);
+        //curDongle.transform.position = new Vector2(pos.x, curDongle.transform.position.y);
+        CheckDonglePosition(pos);
+    }
 
-        
+
+    private void CheckDonglePosition(Vector2 _donglePos)
+    {
+        Vector2 pos = mainCam.WorldToViewportPoint(_donglePos);
+        Debug.Log(pos);
+
+        if (pos.x > 1 - (curDongle.transform.localScale.x * 0.1f))
+        {
+            pos.x = 1 - curDongle.transform.localScale.x * 0.11f;
+            curDongle.transform.position = new Vector2(mainCam.ViewportToWorldPoint(pos).x, curDongle.transform.position.y);
+        }
+        else if(pos.x < curDongle.transform.localScale.x * 0.1f)
+        {
+            pos.x = curDongle.transform.localScale.x * 0.11f;
+            curDongle.transform.position = new Vector2(mainCam.ViewportToWorldPoint(pos).x, curDongle.transform.position.y);
+        }
+        else
+        {
+            curDongle.transform.position = new Vector2(mainCam.ViewportToWorldPoint(pos).x, curDongle.transform.position.y);
+        }
     }
 
     /// <summary>
@@ -80,9 +101,8 @@ public class GameManager : MonoBehaviour
         curDongle = null;
 
         int idx = Random.Range(0, listDongleObj.Count);
-        curDongle = Instantiate(listDongleObj[idx]);
+        curDongle = Instantiate(listDongleObj[idx], new Vector2(0, 4.5f), Quaternion.identity, layerDongle);
         curDongleSc = curDongle.GetComponent<Dongle>();
-        curDongle.transform.position = new Vector2(0, 4.5f);
         curDongleSc.DongleIndex = idx;
         spawn = false;
     }
@@ -118,7 +138,10 @@ public class GameManager : MonoBehaviour
             Destroy(sumDongles[i]);
         }
 
-        GameObject obj = Instantiate(listDongleObj[idx + 1], _dongle1.transform.position, Quaternion.identity);
-        obj.GetComponent<Dongle>().Drop();
+        GameObject obj = Instantiate(listDongleObj[idx + 1], _dongle1.transform.position, Quaternion.identity, layerDongle);
+        Dongle objSc = obj.GetComponent<Dongle>();
+        objSc.Drop();
+        objSc.DongleIndex = idx + 1;
+        objSc.IsMatch = true;
     }
 }

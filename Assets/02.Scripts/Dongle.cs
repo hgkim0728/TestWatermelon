@@ -10,17 +10,27 @@ public class Dongle : MonoBehaviour
     private Rigidbody2D rb;
 
     private int onSpawn = 0;    // 첫 충돌이 발생하면 게임매니저에 새로운 동글이를 만들라고 알려주기 위한 변수
-    private bool drop = false;
+    private bool isDrop = false;
+    private bool isMatch = false;
 
+    #region 프로퍼티
     public int DongleIndex
     {
         get { return dongleIndex; }
         set { dongleIndex = value; }
     }
 
+    public bool IsMatch
+    {
+        set { isMatch = value; }
+    }
+    #endregion
+
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if(onSpawn == 0 && drop == true)
+        if(onSpawn == 0 && isDrop == true && isMatch == false
+            && collision.gameObject.CompareTag("DeadLine") == false
+            && collision.gameObject.CompareTag("Box") == false)
         {
             Debug.Log("스폰!!!!!");
             gameManager.Spawn = true;
@@ -42,6 +52,23 @@ public class Dongle : MonoBehaviour
         }
     }
 
+    //private void OnCollisionStay2D(Collision2D collision)
+    //{
+    //    if (onSpawn == 0 && isDrop == true && isMatch == false
+    //        && collision.gameObject.CompareTag("DeadLine") == false)
+    //    {
+    //        Debug.Log("스폰!!!!!");
+    //        gameManager.Spawn = true;
+    //        Invoke("CallCurrentDongleSet", 1.5f);
+    //        onSpawn++;
+    //    }
+    //}
+
+    private void CallCurrentDongleSet()
+    {
+        gameManager.CurrentDongleSet();
+    }
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -60,7 +87,7 @@ public class Dongle : MonoBehaviour
     public void Drop()
     {
         rb.gravityScale = 1;
-        drop = true;
+        isDrop = true;
     }
 
     // 슈팅 게임 참고해서 동글이 화면 밖으로 나가지 못하게 막기
