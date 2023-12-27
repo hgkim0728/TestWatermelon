@@ -9,7 +9,7 @@ public class Dongle : MonoBehaviour
     private GameManager gameManager;
     private Rigidbody2D rb;
 
-    private int onSpawn = 0;    // 첫 충돌이 발생하면 게임매니저에 새로운 동글이를 만들라고 알려주기 위한 변수
+    private bool onSpawn = false;    // 첫 충돌이 발생하면 게임매니저에 새로운 동글이를 만들라고 알려주기 위한 변수
     private bool isDrop = false;
     private bool isMatch = false;
 
@@ -28,14 +28,14 @@ public class Dongle : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if(onSpawn == 0 && isDrop == true && isMatch == false
+        if(onSpawn == false && isDrop == true && isMatch == false
             && collision.gameObject.CompareTag("DeadLine") == false
             && collision.gameObject.CompareTag("Box") == false)
         {
             Debug.Log("스폰!!!!!");
             gameManager.Spawn = true;
             gameManager.CurrentDongleSet();
-            onSpawn++;
+            onSpawn = true;
         }
 
         if(collision.gameObject.CompareTag("Dongle"))
