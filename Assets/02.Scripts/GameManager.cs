@@ -12,6 +12,8 @@ public class GameManager : MonoBehaviour
     private Dongle curDongleSc;
     GameObject[] sumDongles = new GameObject[2];
 
+    [SerializeField, Tooltip("게임종료 이미지")] private GameObject gameOverImg;
+
     private Camera mainCam;
 
     private bool spawn = true;
@@ -52,9 +54,10 @@ public class GameManager : MonoBehaviour
         if(Input.GetKeyUp(KeyCode.Mouse0))
         {
             curDongleSc.Drop();
+            curDongle = null;
         }
 
-        if(Input.GetKey(KeyCode.Mouse0) == false)
+        if(Input.GetKey(KeyCode.Mouse0) == false || curDongle == null)
         {
             return;
         }
@@ -65,10 +68,13 @@ public class GameManager : MonoBehaviour
         CheckDonglePosition(pos);
     }
 
-
-    private void CheckDonglePosition(Vector2 _donglePos)
+    /// <summary>
+    /// 동글이가 화면 밖으로 나가지 않게 조절
+    /// </summary>
+    /// <param name="_mousePos">마우스 위치</param>
+    private void CheckDonglePosition(Vector2 _mousePos)
     {
-        Vector2 pos = mainCam.WorldToViewportPoint(_donglePos);
+        Vector2 pos = mainCam.WorldToViewportPoint(_mousePos);
         Debug.Log(pos);
 
         if (pos.x > 1 - (curDongle.transform.localScale.x * 0.1f))
@@ -98,9 +104,7 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        curDongle = null;
-
-        int idx = Random.Range(0, listDongleObj.Count);
+        int idx = Random.Range(0, 4);
         curDongle = Instantiate(listDongleObj[idx], new Vector2(0, 4.5f), Quaternion.identity, layerDongle);
         curDongleSc = curDongle.GetComponent<Dongle>();
         curDongleSc.DongleIndex = idx;
@@ -143,5 +147,10 @@ public class GameManager : MonoBehaviour
         objSc.Drop();
         objSc.DongleIndex = idx + 1;
         objSc.IsMatch = true;
+    }
+
+    public void GameOver()
+    {
+        gameOverImg.SetActive(true);
     }
 }

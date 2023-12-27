@@ -20,6 +20,11 @@ public class Dongle : MonoBehaviour
         set { dongleIndex = value; }
     }
 
+    public bool IsDrop
+    {
+        get { return isDrop; }
+    }
+
     public bool IsMatch
     {
         set { isMatch = value; }
@@ -43,7 +48,7 @@ public class Dongle : MonoBehaviour
             Dongle sc = collision.gameObject.GetComponent<Dongle>();
             int idx = sc.DongleIndex;
 
-            if(idx == dongleIndex)
+            if (idx == dongleIndex && isDrop == true && sc.IsDrop == true)
             {
                 // 한 단계 위의 동글로 교체
                 gameManager.SumDongle(this.gameObject, collision.gameObject);
@@ -52,17 +57,13 @@ public class Dongle : MonoBehaviour
         }
     }
 
-    //private void OnCollisionStay2D(Collision2D collision)
-    //{
-    //    if (onSpawn == 0 && isDrop == true && isMatch == false
-    //        && collision.gameObject.CompareTag("DeadLine") == false)
-    //    {
-    //        Debug.Log("스폰!!!!!");
-    //        gameManager.Spawn = true;
-    //        Invoke("CallCurrentDongleSet", 1.5f);
-    //        onSpawn++;
-    //    }
-    //}
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if(isDrop == true && collision.gameObject.CompareTag("DeadLine"))
+        {
+            gameManager.GameOver();
+        }
+    }
 
     private void CallCurrentDongleSet()
     {
