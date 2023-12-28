@@ -75,7 +75,6 @@ public class GameManager : MonoBehaviour
     private void CheckDonglePosition(Vector2 _mousePos)
     {
         Vector2 pos = mainCam.WorldToViewportPoint(_mousePos);
-        Debug.Log(pos);
 
         if (pos.x > 1 - (curDongle.transform.localScale.x * 0.1f))
         {
@@ -105,7 +104,7 @@ public class GameManager : MonoBehaviour
         }
 
         int idx = Random.Range(0, 4);
-        curDongle = Instantiate(listDongleObj[idx], new Vector2(0, 4.5f), Quaternion.identity, layerDongle);
+        curDongle = Instantiate(listDongleObj[idx], new Vector2(0, 4.0f), Quaternion.identity, layerDongle);
         curDongleSc = curDongle.GetComponent<Dongle>();
         curDongleSc.DongleIndex = idx;
         spawn = false;
@@ -119,17 +118,6 @@ public class GameManager : MonoBehaviour
     /// <param name="_dongle2">호출한 동글이와 충돌한 동글이</param>
     public void SumDongle(GameObject _dongle1, GameObject _dongle2)
     {
-        if (sumDongles[0] != null)
-        {
-            for(int i = 0; i < 2; i++)
-            {
-                if (sumDongles[i] == _dongle1)
-                {
-                    return;
-                }
-            }
-        }
-
         sumDongles[0] = _dongle1;
         sumDongles[1] = _dongle2;
 
@@ -137,16 +125,18 @@ public class GameManager : MonoBehaviour
 
         if (idx == listDongleObj.Count - 1) return;
 
+        Vector2 donglePos = new Vector2(_dongle1.transform.position.x, _dongle1.transform.position.y + _dongle1.transform.localScale.y / 2);
+
         for(int i = 0; i < 2; i++)
         {
             Destroy(sumDongles[i]);
         }
 
-        GameObject obj = Instantiate(listDongleObj[idx + 1], _dongle1.transform.position, Quaternion.identity, layerDongle);
+        GameObject obj = Instantiate(listDongleObj[idx + 1], donglePos, Quaternion.identity, layerDongle);
         Dongle objSc = obj.GetComponent<Dongle>();
         objSc.Drop();
         objSc.DongleIndex = idx + 1;
-        objSc.IsMatch = true;
+        objSc.OnSpawn = true;
     }
 
     public void GameOver()
