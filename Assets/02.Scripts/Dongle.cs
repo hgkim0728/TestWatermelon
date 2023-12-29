@@ -57,14 +57,14 @@ public class Dongle : MonoBehaviour
         {
             Dongle sc = collision.gameObject.GetComponent<Dongle>();
             int idx = sc.DongleIndex;
-            Transform objTrs = collision.transform;
+            ContactPoint2D contactPoint = collision.contacts[0];
 
             if (idx == dongleIndex && isDrop == true && sc.IsDrop == true 
-                && isMatch == false && sc.IsMatch == false && transform.position.y < objTrs.position.y)
+                && isMatch == false && sc.IsMatch == false)
             {
                 // 한 단계 위의 동글로 교체
                 sc.IsMatch = true;
-                gameManager.SumDongle(this.gameObject, collision.gameObject);
+                gameManager.SumDongle(this.gameObject, collision.gameObject, contactPoint.point);
                 // 점수 획득
             }
         }
@@ -74,7 +74,16 @@ public class Dongle : MonoBehaviour
     {
         if(onSpawn == true && collision.gameObject.CompareTag("DeadLine"))
         {
-            gameManager.GameOver();
+            lineContect = true;
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if(onSpawn == true && collision.gameObject.CompareTag("DeadLine"))
+        {
+            lineContect = false;
+            timeContactDeadLine = 0;
         }
     }
 
@@ -94,9 +103,9 @@ public class Dongle : MonoBehaviour
         {
             timeContactDeadLine += Time.deltaTime;
 
-            if(timeContactDeadLine > timeGameOver)
+            if(timeContactDeadLine >= timeGameOver)
             {
-
+                gameManager.GameOver();
             }
         }
     }

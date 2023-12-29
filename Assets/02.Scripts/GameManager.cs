@@ -116,8 +116,19 @@ public class GameManager : MonoBehaviour
     /// </summary>
     /// <param name="_dongle1">이 함수를 호출한 동글이</param>
     /// <param name="_dongle2">호출한 동글이와 충돌한 동글이</param>
-    public void SumDongle(GameObject _dongle1, GameObject _dongle2)
+    public void SumDongle(GameObject _dongle1, GameObject _dongle2, Vector2 _contactPoint)
     {
+        if (sumDongles[0] != null)
+        {
+            for(int i = 0; i < 2; i++)
+            {
+                if (sumDongles[i] == _dongle1)
+                {
+                    return;
+                }
+            }
+        }
+
         sumDongles[0] = _dongle1;
         sumDongles[1] = _dongle2;
 
@@ -125,7 +136,10 @@ public class GameManager : MonoBehaviour
 
         if (idx == listDongleObj.Count - 1) return;
 
-        Vector2 donglePos = new Vector2(_dongle1.transform.position.x, _dongle1.transform.position.y + _dongle1.transform.localScale.y / 2);
+        //Vector2 donglePos = new Vector2(_dongle1.transform.position.x, 
+        //    _dongle1.transform.position.y + _dongle1.transform.localScale.y / 2);
+
+        Vector2 donglePos = _contactPoint;
 
         for(int i = 0; i < 2; i++)
         {
