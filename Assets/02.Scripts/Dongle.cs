@@ -13,6 +13,8 @@ public class Dongle : MonoBehaviour
 
     private float timeContactDeadLine = 0;
 
+    private int dongleScore = 1;
+
     private bool onSpawn = false;    // 첫 충돌이 발생하면 게임매니저에 새로운 동글이를 만들라고 알려주기 위한 변수
     private bool isDrop = false;
     private bool isMatch = false;
@@ -20,6 +22,12 @@ public class Dongle : MonoBehaviour
     private bool lineContect = false;
 
     #region 프로퍼티
+    public int DongleScore
+    {
+        get { return dongleScore; }
+        set { dongleScore = value; }
+    }
+
     public int DongleIndex
     {
         get { return dongleIndex; }

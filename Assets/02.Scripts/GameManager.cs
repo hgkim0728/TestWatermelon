@@ -1,10 +1,17 @@
-﻿using System.Collections;
+﻿using Newtonsoft.Json;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
+
+    public class UserScore
+    {
+        public int score;
+        public string name;
+    }
 
     [SerializeField, Tooltip("동글이 리스트")] List<GameObject> listDongleObj;
     [SerializeField, Tooltip("이번에 떨어뜨릴 동글")] private GameObject curDongle;
@@ -16,12 +23,25 @@ public class GameManager : MonoBehaviour
 
     private Camera mainCam;
 
+    [SerializeField, Tooltip("테스트용. 끝나면 하이어라키에서 지울 것")] private int score = 0;
+
+    private List<UserScore> listUserScore = new List<UserScore>();
+
+    private string scoreKey = "ScoreKey";
+
     private bool spawn = true;
+
+    #region 프로퍼티
+    public int Score
+    {
+        get { return score; }
+    }
 
     public bool Spawn
     {
         set { spawn = value; }
     }
+    #endregion
 
     void Awake()
     {
@@ -39,6 +59,7 @@ public class GameManager : MonoBehaviour
     {
         mainCam = Camera.main;
         CurrentDongleSet();
+        //SetScore();
     }
 
     void Update()
@@ -108,6 +129,7 @@ public class GameManager : MonoBehaviour
         curDongleSc = curDongle.GetComponent<Dongle>();
         curDongleSc.DongleIndex = idx;
         spawn = false;
+        curDongleSc.DongleScore = SetDongleScore(idx);
     }
 
     /// <summary>
@@ -132,9 +154,12 @@ public class GameManager : MonoBehaviour
         sumDongles[0] = _dongle1;
         sumDongles[1] = _dongle2;
 
-        int idx = _dongle1.GetComponent<Dongle>().DongleIndex;
+        Dongle _dongleSc = _dongle1.GetComponent<Dongle>();
+        int idx = _dongleSc.DongleIndex;
 
         if (idx == listDongleObj.Count - 1) return;
+
+        score += _dongleSc.DongleScore;
 
         //Vector2 donglePos = new Vector2(_dongle1.transform.position.x, 
         //    _dongle1.transform.position.y + _dongle1.transform.localScale.y / 2);
@@ -150,7 +175,48 @@ public class GameManager : MonoBehaviour
         Dongle objSc = obj.GetComponent<Dongle>();
         objSc.Drop();
         objSc.DongleIndex = idx + 1;
+        objSc.DongleScore = SetDongleScore(idx + 1);
         objSc.OnSpawn = true;
+    }
+
+    private int SetDongleScore(int _idx)
+    {
+        int score = (_idx + 1) * 10;
+        return score;
+    }
+
+    private void SetScore()
+    {
+        if(PlayerPrefs.HasKey(scoreKey))
+        {
+            string savedValue = PlayerPrefs.GetString(scoreKey);
+
+            if(savedValue == string.Empty)
+            {
+                ClearScore();
+            }
+            else
+            {
+                listUserScore = JsonConvert.DeserializeObject<List<UserScore>>(savedValue);
+            }
+        }
+        else
+        {
+            ClearScore();
+        }
+    }
+
+    private void ClearScore()
+    {
+        listUserScore.Clear();
+
+        for(int i = 0; i < 10; i++)
+        {
+            listUserScore.Add(new UserScore());
+        }
+
+        string saveValue = JsonConvert.SerializeObject(listUserScore);
+        PlayerPrefs.SetString(scoreKey, saveValue);
     }
 
     public void GameOver()
