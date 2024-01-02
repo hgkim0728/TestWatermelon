@@ -19,22 +19,24 @@ public class GameManager : MonoBehaviour
     private Dongle curDongleSc;
     GameObject[] sumDongles = new GameObject[2];
 
-    [SerializeField, Tooltip("게임종료 이미지")] private GameObject gameOverImg;
+    [SerializeField, Tooltip("UI 매니저")] private UIManager uiManager;
 
     private Camera mainCam;
 
-    [SerializeField, Tooltip("테스트용. 끝나면 하이어라키에서 지울 것")] private int score = 0;
+    [SerializeField, Tooltip("테스트용. 끝나면 하이어라키에서 지울 것")] private int curScore = 0;
 
     private List<UserScore> listUserScore = new List<UserScore>();
 
     private string scoreKey = "ScoreKey";
+    private int newRank = 0;
 
     private bool spawn = true;
+    private bool gameOver = false;
 
     #region 프로퍼티
     public int Score
     {
-        get { return score; }
+        get { return curScore; }
     }
 
     public bool Spawn
@@ -64,7 +66,10 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
-        OnClick();
+        if (gameOver == false)
+        {
+            OnClick();
+        }
     }
 
     /// <summary>
@@ -159,7 +164,7 @@ public class GameManager : MonoBehaviour
 
         if (idx == listDongleObj.Count - 1) return;
 
-        score += _dongleSc.DongleScore;
+        curScore += _dongleSc.DongleScore;
 
         //Vector2 donglePos = new Vector2(_dongle1.transform.position.x, 
         //    _dongle1.transform.position.y + _dongle1.transform.localScale.y / 2);
@@ -206,6 +211,32 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private int GetPlayerRank()
+    {
+        int count = listUserScore.Count;
+
+        for(int i = 0; i < count; i++)
+        {
+            UserScore userScore = listUserScore[i];
+
+            if(curScore > userScore.score)
+            {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+    public void SetNewRank(string _name)
+    {
+        listUserScore.Insert(newRank, new UserScore(){ name = _name, score = curScore });
+        listUserScore.RemoveAt(listUserScore.Count - 1);
+
+        string saveValue = JsonConvert.SerializeObject(listUserScore);
+        PlayerPrefs.SetString(scoreKey, saveValue);
+    }
+
     private void ClearScore()
     {
         listUserScore.Clear();
@@ -219,8 +250,27 @@ public class GameManager : MonoBehaviour
         PlayerPrefs.SetString(scoreKey, saveValue);
     }
 
+    public void CheckRank()
+    {
+        int rank = GetPlayerRank();
+
+        if(rank == -1)
+        {
+            uiManager.NotRank(curScore);
+        }
+        else
+        {
+            newRank = rank;
+            uiManager.NewRank(rank, curScore);
+        }
+    }
+
     public void GameOver()
     {
-        gameOverImg.SetActive(true);
+        if (gameOver == false)
+        {
+            uiManager.ActiveGameOverImg();
+            gameOver = true;
+        }
     }
 }
