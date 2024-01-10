@@ -170,7 +170,15 @@ public class GameManager : MonoBehaviour
 
         curScore += _dongleSc.DongleScore;
 
-        if (idx == listDongleObj.Count - 1) return;
+        if (idx == listDongleObj.Count - 1)
+        {
+            for(int i = 0; i < 2; i++)
+            {
+                sumDongles[i] = null;
+            }
+
+            return;
+        }
 
         //Vector2 donglePos = new Vector2(_dongle1.transform.position.x, 
         //    _dongle1.transform.position.y + _dongle1.transform.localScale.y / 2);
