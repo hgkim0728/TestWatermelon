@@ -6,22 +6,27 @@ using UnityEngine;
 public class Dongle : MonoBehaviour
 {
     [SerializeField, Tooltip("동글이 번호")] private int dongleIndex = 0;
-    [SerializeField, Tooltip("게임오버 선에 동글이가 닿아도 되는 제한시간")] private float timeGameOver = 3.0f;
 
     private GameManager gameManager;
     private Rigidbody2D rb;
 
     private float timeContactDeadLine = 0;
+    private float timeGameOver = 3.0f;  // 게임오버 선에 동글이가 닿아도 되는 제한시간
 
     private int dongleScore = 1;
 
-    private bool onSpawn = false;    // 첫 충돌이 발생하면 게임매니저에 새로운 동글이를 만들라고 알려주기 위한 변수
-    private bool isDrop = false;
-    private bool isMatch = false;
+    [SerializeField]private bool onSpawn = false;    // 첫 충돌이 발생하면 게임매니저에 새로운 동글이를 만들라고 알려주기 위한 변수
+    [SerializeField]private bool isDrop = false;
+    [SerializeField] private bool isMatch = false;
 
     private bool lineContect = false;
 
     #region 프로퍼티
+    public float TimeGameOver
+    {
+        set { timeGameOver = value; }
+    }
+
     public int DongleScore
     {
         get { return dongleScore; }

@@ -23,6 +23,7 @@ public class GameManager : MonoBehaviour
 
     private Camera mainCam;
 
+    [SerializeField, Tooltip("선에 닿고 이만큼의 시간이 지나면 게임 오버")] private float timeGameOver = 2.0f;
     [SerializeField, Tooltip("테스트용. 끝나면 하이어라키에서 지울 것")] private int curScore = 0;
 
     private List<UserScore> listUserScore = new List<UserScore>();
@@ -135,6 +136,7 @@ public class GameManager : MonoBehaviour
         curDongleSc.DongleIndex = idx;
         spawn = false;
         curDongleSc.DongleScore = SetDongleScore(idx);
+        curDongleSc.TimeGameOver = timeGameOver;
     }
 
     /// <summary>
@@ -151,6 +153,10 @@ public class GameManager : MonoBehaviour
             {
                 if (sumDongles[i] == _dongle1)
                 {
+                    for(int j = 0; j < 2; j++)
+                    {
+                        sumDongles[j] = null;
+                    }
                     return;
                 }
             }
@@ -181,15 +187,25 @@ public class GameManager : MonoBehaviour
         objSc.Drop();
         objSc.DongleIndex = idx + 1;
         objSc.DongleScore = SetDongleScore(idx + 1);
+        objSc.TimeGameOver = timeGameOver;
         objSc.OnSpawn = true;
     }
 
+    /// <summary>
+    /// 동글이 점수 설정
+    /// </summary>
+    /// <param name="_idx">동글이 번호</param>
+    /// <returns></returns>
     private int SetDongleScore(int _idx)
     {
         int score = (_idx + 1) * 10;
         return score;
     }
 
+    /// <summary>
+    /// 키가 있는지 확인하고
+    /// 저장된 순위를 가져온다
+    /// </summary>
     private void SetScore()
     {
         if(PlayerPrefs.HasKey(scoreKey))

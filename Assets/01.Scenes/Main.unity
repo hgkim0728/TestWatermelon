@@ -2601,6 +2601,7 @@ MonoBehaviour:
   curDongle: {fileID: 0}
   layerDongle: {fileID: 611015510}
   uiManager: {fileID: 1963328381}
+  timeGameOver: 1
   curScore: 0
 --- !u!4 &2046236018
 Transform:
