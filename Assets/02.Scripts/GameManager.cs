@@ -151,7 +151,7 @@ public class GameManager : MonoBehaviour
         {
             for(int i = 0; i < 2; i++)
             {
-                if (sumDongles[i] == _dongle1)
+                if (sumDongles[i] == _dongle1 || _dongle2 != null)
                 {
                     for(int j = 0; j < 2; j++)
                     {
@@ -168,9 +168,9 @@ public class GameManager : MonoBehaviour
         Dongle _dongleSc = _dongle1.GetComponent<Dongle>();
         int idx = _dongleSc.DongleIndex;
 
-        if (idx == listDongleObj.Count - 1) return;
-
         curScore += _dongleSc.DongleScore;
+
+        if (idx == listDongleObj.Count - 1) return;
 
         //Vector2 donglePos = new Vector2(_dongle1.transform.position.x, 
         //    _dongle1.transform.position.y + _dongle1.transform.localScale.y / 2);
