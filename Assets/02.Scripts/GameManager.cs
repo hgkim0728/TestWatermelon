@@ -147,12 +147,16 @@ public class GameManager : MonoBehaviour
     /// <param name="_dongle2">호출한 동글이와 충돌한 동글이</param>
     public void SumDongle(GameObject _dongle1, GameObject _dongle2, Vector2 _contactPoint)
     {
+        // 중복 확인
+        // 중복 확인용 배열이 null이 아니면
         if (sumDongles[0] != null)
         {
             for(int i = 0; i < 2; i++)
             {
-                if (sumDongles[i] == _dongle1 || _dongle2 != null)
+                // 이미 합쳐진 동글이가 아닌지 확인
+                if (sumDongles[i] == _dongle1 || _dongle2 != null || sumDongles[i] == _dongle2)
                 {
+                    // 이미 합체한 동글이가 맞다면 배열을 비우고 종료
                     for(int j = 0; j < 2; j++)
                     {
                         sumDongles[j] = null;
