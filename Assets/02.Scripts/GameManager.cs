@@ -17,7 +17,7 @@ public class GameManager : MonoBehaviour
     [SerializeField, Tooltip("이번에 떨어뜨릴 동글")] private GameObject curDongle;
     [SerializeField, Tooltip("동글 오브젝트가 들어갈 레이어")] private Transform layerDongle;
     private Dongle curDongleSc;
-    GameObject[] sumDongles = new GameObject[2];
+    //GameObject[] sumDongles = new GameObject[2];
 
     [SerializeField, Tooltip("UI 매니저")] private UIManager uiManager;
 
@@ -149,25 +149,25 @@ public class GameManager : MonoBehaviour
     {
         // 중복 확인
         // 중복 확인용 배열이 null이 아니면
-        if (sumDongles[0] != null)
-        {
-            for(int i = 0; i < 2; i++)
-            {
-                // 이미 합쳐진 동글이가 아닌지 확인
-                if (sumDongles[i] == _dongle1 || _dongle2 != null || sumDongles[i] == _dongle2)
-                {
-                    // 이미 합체한 동글이가 맞다면 배열을 비우고 종료
-                    for(int j = 0; j < 2; j++)
-                    {
-                        sumDongles[j] = null;
-                    }
-                    return;
-                }
-            }
-        }
+        //if (sumDongles[0] != null)
+        //{
+        //    for(int i = 0; i < 2; i++)
+        //    {
+        //        // 이미 합쳐진 동글이가 아닌지 확인
+        //        if (sumDongles[i] == _dongle1 || _dongle2 != null || sumDongles[i] == _dongle2)
+        //        {
+        //            // 이미 합체한 동글이가 맞다면 배열을 비우고 종료
+        //            for(int j = 0; j < 2; j++)
+        //            {
+        //                sumDongles[j] = null;
+        //            }
+        //            return;
+        //        }
+        //    }
+        //}
 
-        sumDongles[0] = _dongle1;
-        sumDongles[1] = _dongle2;
+        //sumDongles[0] = _dongle1;
+        //sumDongles[1] = _dongle2;
 
         Dongle _dongleSc = _dongle1.GetComponent<Dongle>();
         int idx = _dongleSc.DongleIndex;
@@ -176,11 +176,12 @@ public class GameManager : MonoBehaviour
 
         if (idx == listDongleObj.Count - 1)
         {
-            for(int i = 0; i < 2; i++)
-            {
-                sumDongles[i] = null;
-            }
+            //for(int i = 0; i < 2; i++)
+            //{
+            //    sumDongles[i] = null;
+            //}
 
+            Destroy(_dongle2.gameObject);
             return;
         }
 
@@ -189,10 +190,13 @@ public class GameManager : MonoBehaviour
 
         Vector2 donglePos = _contactPoint;
 
-        for(int i = 0; i < 2; i++)
-        {
-            Destroy(sumDongles[i]);
-        }
+        //for(int i = 0; i < 2; i++)
+        //{
+        //    Destroy(sumDongles[i]);
+        //}
+
+        Destroy(_dongle1.gameObject);
+        Destroy(_dongle2.gameObject);
 
         GameObject obj = Instantiate(listDongleObj[idx + 1], donglePos, Quaternion.identity, layerDongle);
         Dongle objSc = obj.GetComponent<Dongle>();

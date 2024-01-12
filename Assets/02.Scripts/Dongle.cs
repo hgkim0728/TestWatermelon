@@ -44,10 +44,10 @@ public class Dongle : MonoBehaviour
         set { onSpawn = value; }
     }
 
-    public bool IsDrop
-    {
-        get { return isDrop; }
-    }
+    //public bool IsDrop
+    //{
+    //    get { return isDrop; }
+    //}
 
     public bool IsMatch
     {
@@ -55,50 +55,6 @@ public class Dongle : MonoBehaviour
         set { isMatch = value; }
     }
     #endregion
-
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if(onSpawn == false && isDrop == true
-            && collision.gameObject.CompareTag("Box") == false)
-        {
-            gameManager.Spawn = true;
-            gameManager.CurrentDongleSet();
-            onSpawn = true;
-        }
-
-        if(collision.gameObject.CompareTag("Dongle"))
-        {
-            Dongle sc = collision.gameObject.GetComponent<Dongle>();
-            int idx = sc.DongleIndex;
-            ContactPoint2D contactPoint = collision.contacts[0];
-
-            if (idx == dongleIndex && isDrop == true && sc.IsDrop == true 
-                && isMatch == false && sc.IsMatch == false)
-            {
-                // 한 단계 위의 동글로 교체
-                sc.IsMatch = true;
-                gameManager.SumDongle(this.gameObject, collision.gameObject, contactPoint.point);
-                // 점수 획득
-            }
-        }
-    }
-
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if(onSpawn == true && collision.gameObject.CompareTag("DeadLine"))
-        {
-            lineContect = true;
-        }
-    }
-
-    private void OnTriggerExit2D(Collider2D collision)
-    {
-        if(onSpawn == true && collision.gameObject.CompareTag("DeadLine"))
-        {
-            lineContect = false;
-            timeContactDeadLine = 0;
-        }
-    }
 
     private void Awake()
     {
@@ -120,6 +76,47 @@ public class Dongle : MonoBehaviour
             {
                 gameManager.GameOver();
             }
+        }
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if(onSpawn == false && collision.gameObject.CompareTag("Box") == false)
+        {
+            gameManager.Spawn = true;
+            gameManager.CurrentDongleSet();
+            onSpawn = true;
+        }
+
+        if(collision.gameObject.CompareTag("Dongle") && isMatch == false)
+        {
+            Dongle sc = collision.gameObject.GetComponent<Dongle>();
+            int idx = sc.DongleIndex;
+            ContactPoint2D contactPoint = collision.contacts[0];
+
+            if (idx == dongleIndex && isDrop == true && isMatch == false && sc.IsMatch == false)
+            {
+                isMatch = true;
+                sc.IsMatch = true;
+                gameManager.SumDongle(this.gameObject, collision.gameObject, contactPoint.point);
+            }
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if(onSpawn == true && collision.gameObject.CompareTag("DeadLine"))
+        {
+            lineContect = true;
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if(onSpawn == true && collision.gameObject.CompareTag("DeadLine"))
+        {
+            lineContect = false;
+            timeContactDeadLine = 0;
         }
     }
 
