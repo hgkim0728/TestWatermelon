@@ -5,8 +5,9 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    public static GameManager Instance;
+    public static GameManager Instance;     // 게임매니저 인스턴스
 
+    // 랭킹 저장을 위한 클래스
     public class UserScore
     {
         public int score;
@@ -16,23 +17,24 @@ public class GameManager : MonoBehaviour
     [SerializeField, Tooltip("동글이 리스트")] List<GameObject> listDongleObj;
     [SerializeField, Tooltip("이번에 떨어뜨릴 동글")] private GameObject curDongle;
     [SerializeField, Tooltip("동글 오브젝트가 들어갈 레이어")] private Transform layerDongle;
-    private Dongle curDongleSc;
+    private Dongle curDongleSc; // 이번에 떨어뜨릴 동글이의 동글 스크립트
     //GameObject[] sumDongles = new GameObject[2];
 
     [SerializeField, Tooltip("UI 매니저")] private UIManager uiManager;
 
-    private Camera mainCam;
+    private Camera mainCam;     // 메인 카메라
 
     [SerializeField, Tooltip("선에 닿고 이만큼의 시간이 지나면 게임 오버")] private float timeGameOver = 2.0f;
     [SerializeField, Tooltip("테스트용. 끝나면 하이어라키에서 지울 것")] private int curScore = 0;
 
+    // 유저 랭킹 저장 리스트
     private List<UserScore> listUserScore = new List<UserScore>();
 
-    private string scoreKey = "ScoreKey";
-    private int newRank = 0;
+    private string scoreKey = "ScoreKey";   // 유저 랭킹 저장 키
+    private int newRank = 0;    // 순위 내의 점수가 달성됐을 때 해당되는 랭크를 담을 변수
 
     private bool spawn = true;
-    private bool gameOver = false;
+    private bool isGameOver = false;
 
     #region 프로퍼티
     public int Score
@@ -43,6 +45,11 @@ public class GameManager : MonoBehaviour
     public bool Spawn
     {
         set { spawn = value; }
+    }
+
+    public bool IsGameOver
+    {
+        get { return isGameOver; }
     }
     #endregion
 
@@ -67,7 +74,7 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
-        if (gameOver == false)
+        if (isGameOver == false)
         {
             OnClick();
         }
@@ -124,8 +131,8 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void CurrentDongleSet()
     {
-        // 다음 차례의 동글을 정하는 
-        if(spawn == false)
+        // 조건을 충족하지 않으면 중단
+        if (spawn == false)
         {
             return;
         }
@@ -182,6 +189,8 @@ public class GameManager : MonoBehaviour
             //}
 
             Destroy(_dongle2.gameObject);
+
+            _dongleSc.IsMatch = false;
             return;
         }
 
@@ -299,10 +308,10 @@ public class GameManager : MonoBehaviour
 
     public void GameOver()
     {
-        if (gameOver == false)
+        if (isGameOver == false)
         {
             uiManager.ActiveGameOverImg();
-            gameOver = true;
+            isGameOver = true;
         }
     }
 }

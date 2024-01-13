@@ -81,7 +81,8 @@ public class Dongle : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if(onSpawn == false && collision.gameObject.CompareTag("Box") == false)
+        if(onSpawn == false && collision.gameObject.CompareTag("Box") == false 
+            && isDrop == true)
         {
             gameManager.Spawn = true;
             gameManager.CurrentDongleSet();
