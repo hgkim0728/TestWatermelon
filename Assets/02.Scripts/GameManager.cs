@@ -85,21 +85,24 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private void OnClick()
     {
-        if(Input.GetKeyUp(KeyCode.Mouse0))
+        // 마우스를 왼쪽 버튼을 누른 상태였다가 손을 떼면
+        if(Input.GetKeyUp(KeyCode.Mouse0) == true)
         {
-            curDongleSc.Drop();
-            curDongle = null;
+            curDongleSc.Drop();     // 현재 선택된 동글이를 떨어뜨리고
+            curDongle = null;   // curDongle 변수를 비운다
         }
 
+        // 마우스 왼쪽 버튼을 클릭하지 않거나 curDongle 변수가 비어있으면 중단
         if(Input.GetKey(KeyCode.Mouse0) == false || curDongle == null)
         {
             return;
         }
 
-        Vector2 mPos = Input.mousePosition;
-        Vector2 pos = mainCam.ScreenToWorldPoint(mPos);
+
+        Vector2 mPos = Input.mousePosition;     // 현재 마우스 위치를 가져옴
+        Vector2 pos = mainCam.ScreenToWorldPoint(mPos);     // 마우스의 위치를 스크린에서 월드 기준으로 변경
         //curDongle.transform.position = new Vector2(pos.x, curDongle.transform.position.y);
-        CheckDonglePosition(pos);
+        CheckDonglePosition(pos);   // 마우스의 위치에 따라서 동글이 위치 변경
     }
 
     /// <summary>
@@ -108,19 +111,20 @@ public class GameManager : MonoBehaviour
     /// <param name="_mousePos">마우스 위치</param>
     private void CheckDonglePosition(Vector2 _mousePos)
     {
-        Vector2 pos = mainCam.WorldToViewportPoint(_mousePos);
+        Vector2 pos = mainCam.WorldToViewportPoint(_mousePos);  // 마우스의 위치를 월드에서 뷰포트 기준으로 변경
 
+        // 마우스 위치가 오른쪽 화면 밖이라면 동글이가 오른쪽 화면 끝에 붙도록
         if (pos.x > 1 - (curDongle.transform.localScale.x * 0.1f))
         {
             pos.x = 1 - curDongle.transform.localScale.x * 0.11f;
             curDongle.transform.position = new Vector2(mainCam.ViewportToWorldPoint(pos).x, curDongle.transform.position.y);
         }
-        else if(pos.x < curDongle.transform.localScale.x * 0.1f)
+        else if(pos.x < curDongle.transform.localScale.x * 0.1f)// 마우스 위치가 왼쪽 화면 밖이라면 동글이가 왼쪽 화면 끝에 붙도록
         {
             pos.x = curDongle.transform.localScale.x * 0.11f;
             curDongle.transform.position = new Vector2(mainCam.ViewportToWorldPoint(pos).x, curDongle.transform.position.y);
         }
-        else
+        else// 마우스가 화면 안에 있다면 그 x값이 동글이 위치의 x값이 되도록
         {
             curDongle.transform.position = new Vector2(mainCam.ViewportToWorldPoint(pos).x, curDongle.transform.position.y);
         }
@@ -132,10 +136,10 @@ public class GameManager : MonoBehaviour
     public void CurrentDongleSet()
     {
         // 조건을 충족하지 않으면 중단
-        if (spawn == false)
-        {
-            return;
-        }
+        //if (spawn == false)
+        //{
+        //    return;
+        //}
 
         int idx = Random.Range(0, 4);
         curDongle = Instantiate(listDongleObj[idx], new Vector2(0, 4.0f), Quaternion.identity, layerDongle);
