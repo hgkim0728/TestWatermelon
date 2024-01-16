@@ -5,51 +5,44 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    #region 변수
     public static GameManager Instance;     // 게임매니저 인스턴스
 
     // 랭킹 저장을 위한 클래스
     public class UserScore
     {
-        public int score;
-        public string name;
+        public int score;   // 새로운 랭크를 달성한 유저의 점수
+        public string name; // 새로운 랭크를 달성한 유저의 이름
     }
 
-    [SerializeField, Tooltip("동글이 리스트")] List<GameObject> listDongleObj;
-    [SerializeField, Tooltip("이번에 떨어뜨릴 동글")] private GameObject curDongle;
+    [SerializeField, Tooltip("동글 프리팹 리스트")] List<GameObject> listDongleObj;
     [SerializeField, Tooltip("동글 오브젝트가 들어갈 레이어")] private Transform layerDongle;
+    [SerializeField, Tooltip("떨어뜨릴 동글이 중 가장 큰 동글 인덱스(+1해서 입력해야 함)")] private int maxCurDongleIdx = 4;
+    private GameObject curDongle;   // 이번에 떨어뜨릴 동글이
     private Dongle curDongleSc; // 이번에 떨어뜨릴 동글이의 동글 스크립트
-    //GameObject[] sumDongles = new GameObject[2];
 
     [SerializeField, Tooltip("UI 매니저")] private UIManager uiManager;
 
     private Camera mainCam;     // 메인 카메라
 
     [SerializeField, Tooltip("선에 닿고 이만큼의 시간이 지나면 게임 오버")] private float timeGameOver = 2.0f;
-    [SerializeField, Tooltip("테스트용. 끝나면 하이어라키에서 지울 것")] private int curScore = 0;
 
     // 유저 랭킹 저장 리스트
     private List<UserScore> listUserScore = new List<UserScore>();
 
-    private string scoreKey = "ScoreKey";   // 유저 랭킹 저장 키
-    private int newRank = 0;    // 순위 내의 점수가 달성됐을 때 해당되는 랭크를 담을 변수
+    private int curScore = 0;   // 현재 유저가 달성한 점수
 
-    private bool spawn = true;
-    private bool isGameOver = false;
+    private int newRank = 0;    // 순위 내의 점수가 달성됐을 때 해당되는 랭크를 담을 변수
+    private string scoreKey = "ScoreKey";   // 유저 랭킹 저장 키
+
+    private bool isGameOver = false;    // 게임 오버인지 아닌지
+    #endregion
 
     #region 프로퍼티
+    // 유저가 현재 달성한 점수의 프로퍼티
     public int Score
     {
         get { return curScore; }
-    }
-
-    public bool Spawn
-    {
-        set { spawn = value; }
-    }
-
-    public bool IsGameOver
-    {
-        get { return isGameOver; }
     }
     #endregion
 
@@ -67,13 +60,14 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        mainCam = Camera.main;
-        CurrentDongleSet();
-        SetScore();
+        mainCam = Camera.main;  // 메인 카메라 변수에 메인 카메라 넣기
+        CurrentDongleSet();     // 떨어뜨릴 동글이 생성
+        SetUserRank();     // 이전에 달성했던 유저 랭크 점수를 불러와서 문제가 없는지 확인
     }
 
     void Update()
     {
+        // 게임오버되지 않았다면
         if (isGameOver == false)
         {
             OnClick();
@@ -81,7 +75,8 @@ public class GameManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 클릭했을 때
+    /// 클릭했을 때 동글이의 위치의 x값을 마우스의 x값이 되도록 하고
+    /// 동글이를 떨어지게 한다.
     /// </summary>
     private void OnClick()
     {
@@ -101,7 +96,6 @@ public class GameManager : MonoBehaviour
 
         Vector2 mPos = Input.mousePosition;     // 현재 마우스 위치를 가져옴
         Vector2 pos = mainCam.ScreenToWorldPoint(mPos);     // 마우스의 위치를 스크린에서 월드 기준으로 변경
-        //curDongle.transform.position = new Vector2(pos.x, curDongle.transform.position.y);
         CheckDonglePosition(pos);   // 마우스의 위치에 따라서 동글이 위치 변경
     }
 
@@ -135,19 +129,14 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void CurrentDongleSet()
     {
-        // 조건을 충족하지 않으면 중단
-        //if (spawn == false)
-        //{
-        //    return;
-        //}
-
-        int idx = Random.Range(0, 4);
-        curDongle = Instantiate(listDongleObj[idx], new Vector2(0, 4.0f), Quaternion.identity, layerDongle);
-        curDongleSc = curDongle.GetComponent<Dongle>();
-        curDongleSc.DongleIndex = idx;
-        spawn = false;
-        curDongleSc.DongleScore = SetDongleScore(idx);
-        curDongleSc.TimeGameOver = timeGameOver;
+        // 가장 작은 동글이부터 떨어뜨릴 수 있는 가장 큰 동글이 인덱스 중 랜덤으로 선정
+        int idx = Random.Range(0, maxCurDongleIdx);
+        // 동글이 생성
+        curDongle = Instantiate(listDongleObj[idx], new Vector2(0, 4.5f), Quaternion.identity, layerDongle);
+        curDongleSc = curDongle.GetComponent<Dongle>();     // 동글이 스크립트 가져오기
+        curDongleSc.DongleIndex = idx;      // 생성된 동글이의 번호 전달(자신이 몇 번째로 큰 동글인지를 알려주는 용도)
+        curDongleSc.DongleScore = SetDongleScore(idx);  // 합체할 때 획득할 점수 전달
+        curDongleSc.TimeGameOver = timeGameOver;    // 탈락선에 몇 초 동안 접촉하면 탈락인지 전달
     }
 
     /// <summary>
@@ -156,68 +145,37 @@ public class GameManager : MonoBehaviour
     /// </summary>
     /// <param name="_dongle1">이 함수를 호출한 동글이</param>
     /// <param name="_dongle2">호출한 동글이와 충돌한 동글이</param>
+    /// <param name="_contactPoint">두 동글이가 충돌한 점의 좌표</param>
     public void SumDongle(GameObject _dongle1, GameObject _dongle2, Vector2 _contactPoint)
     {
-        // 중복 확인
-        // 중복 확인용 배열이 null이 아니면
-        //if (sumDongles[0] != null)
-        //{
-        //    for(int i = 0; i < 2; i++)
-        //    {
-        //        // 이미 합쳐진 동글이가 아닌지 확인
-        //        if (sumDongles[i] == _dongle1 || _dongle2 != null || sumDongles[i] == _dongle2)
-        //        {
-        //            // 이미 합체한 동글이가 맞다면 배열을 비우고 종료
-        //            for(int j = 0; j < 2; j++)
-        //            {
-        //                sumDongles[j] = null;
-        //            }
-        //            return;
-        //        }
-        //    }
-        //}
+        Dongle _dongleSc = _dongle1.GetComponent<Dongle>();     // 함수를 호출한 동글이의 스크립트 가져오기
+        int idx = _dongleSc.DongleIndex;    // 몇 번째로 큰 동글이인지 전달 받기
 
-        //sumDongles[0] = _dongle1;
-        //sumDongles[1] = _dongle2;
+        curScore += _dongleSc.DongleScore;      // 현재까지 획득한 점수에 이 동글이의 점수 추가
 
-        Dongle _dongleSc = _dongle1.GetComponent<Dongle>();
-        int idx = _dongleSc.DongleIndex;
-
-        curScore += _dongleSc.DongleScore;
-
+        // 제일 큰 동글이라면
         if (idx == listDongleObj.Count - 1)
         {
-            //for(int i = 0; i < 2; i++)
-            //{
-            //    sumDongles[i] = null;
-            //}
+            Destroy(_dongle2.gameObject);   // 충돌한 상대 동글이를 제거
 
-            Destroy(_dongle2.gameObject);
-
-            _dongleSc.IsMatch = false;
+            _dongleSc.IsMatch = false;  // 호출한 동글이는 다시 이 함수를 호출할 수 있게
             return;
         }
+        else// 제일 큰 동글이가 아니라면
+        {
+            // 충돌한 모든 동글이 제거
+            Destroy(_dongle1.gameObject);
+            Destroy(_dongle2.gameObject);
+        }
 
-        //Vector2 donglePos = new Vector2(_dongle1.transform.position.x, 
-        //    _dongle1.transform.position.y + _dongle1.transform.localScale.y / 2);
-
-        Vector2 donglePos = _contactPoint;
-
-        //for(int i = 0; i < 2; i++)
-        //{
-        //    Destroy(sumDongles[i]);
-        //}
-
-        Destroy(_dongle1.gameObject);
-        Destroy(_dongle2.gameObject);
-
-        GameObject obj = Instantiate(listDongleObj[idx + 1], donglePos, Quaternion.identity, layerDongle);
-        Dongle objSc = obj.GetComponent<Dongle>();
-        objSc.Drop();
-        objSc.DongleIndex = idx + 1;
-        objSc.DongleScore = SetDongleScore(idx + 1);
-        objSc.TimeGameOver = timeGameOver;
-        objSc.OnSpawn = true;
+        // 충돌한 동글이보다 한 단계 더 큰 동글이 생성
+        GameObject obj = Instantiate(listDongleObj[idx + 1], _contactPoint, Quaternion.identity, layerDongle);
+        Dongle objSc = obj.GetComponent<Dongle>();  // 스크립트 가져오기
+        objSc.Drop();   // 이미 떨어진 동글이라는 걸 알려주기
+        objSc.DongleIndex = idx + 1;    // 몇 번째로 큰 동글인지 전달
+        objSc.DongleScore = SetDongleScore(idx + 1);    // 합체하면 획득할 점수 전달
+        objSc.TimeGameOver = timeGameOver;  // 탈락선에 몇 초 닿으면 달락인지 전달
+        objSc.OnSpawn = true;   // 이미 떨어진 동글이라는 걸 알려주기
     }
 
     /// <summary>
@@ -227,7 +185,7 @@ public class GameManager : MonoBehaviour
     /// <returns></returns>
     private int SetDongleScore(int _idx)
     {
-        int score = (_idx + 1) * 10;
+        int score = (_idx + 1) * 10;    // 몇 번째로 큰 동글인지 * 10
         return score;
     }
 
@@ -235,35 +193,48 @@ public class GameManager : MonoBehaviour
     /// 키가 있는지 확인하고
     /// 저장된 순위를 가져온다
     /// </summary>
-    private void SetScore()
+    private void SetUserRank()
     {
+        // 유저 랭크 저장용 키가 있다면
         if(PlayerPrefs.HasKey(scoreKey))
         {
+            // 저장된 유저 랭크 값 가져오기
             string savedValue = PlayerPrefs.GetString(scoreKey);
 
+            // 저장된 값이 없거나 잘못됐다면
             if(savedValue == string.Empty)
             {
+                // 잘못된 데이터를 삭제하고 다시 생성
                 ClearScore();
             }
-            else
+            else// 제대로 된 값이라면
             {
+                // 유저 랭크 리스트에 정리
                 listUserScore = JsonConvert.DeserializeObject<List<UserScore>>(savedValue);
             }
         }
-        else
+        else// 키가 없다면
         {
+            // 유저 랭크 데이터 생성
             ClearScore();
         }
     }
 
+    /// <summary>
+    /// 게임이 종료 된 후 현재 유저가 달성한 점수가
+    /// 랭크 내에 들었는지 확인
+    /// </summary>
+    /// <returns>랭크 내에 들었다면 달성한 랭크를 반환
+    /// 랭크 내에 들지 못했다면 -1을 반환</returns>
     private int GetPlayerRank()
     {
-        int count = listUserScore.Count;
+        int count = listUserScore.Count;    // 저장되는 랭크의 범위(10)
 
         for(int i = 0; i < count; i++)
         {
             UserScore userScore = listUserScore[i];
 
+            // 현재 유저의 점수가 랭크 i의 유저의 점수보다 높다면
             if(curScore > userScore.score)
             {
                 return i;
@@ -273,28 +244,46 @@ public class GameManager : MonoBehaviour
         return -1;
     }
 
+    /// <summary>
+    /// 현재 유저가 랭크 내에 들었고
+    /// 유저가 이름을 입력했다면
+    /// </summary>
+    /// <param name="_name">새로 랭크를 달성한 유저의 이름</param>
     public void SetNewRank(string _name)
     {
+        // 새로운 랭크를 달성한 유저를 리스트에 추가
         listUserScore.Insert(newRank, new UserScore(){ name = _name, score = curScore });
-        listUserScore.RemoveAt(listUserScore.Count - 1);
+        listUserScore.RemoveAt(listUserScore.Count - 1);    // 랭크에서 벗어난 유저를 리스트에서 삭제
 
+        // 새로운 랭크 리스트를 저장
         string saveValue = JsonConvert.SerializeObject(listUserScore);
         PlayerPrefs.SetString(scoreKey, saveValue);
     }
 
+    /// <summary>
+    /// 잘못된 랭크 정보를 지우고
+    /// 또는 랭크 정보가 존재 하지 않으면
+    /// 새로 랭크 리스트를 만들고 저장
+    /// </summary>
     private void ClearScore()
     {
+        // 잘못된 랭크 리스트 비우기
         listUserScore.Clear();
 
+        // 랭크 리스트 채우기
         for(int i = 0; i < 10; i++)
         {
             listUserScore.Add(new UserScore());
         }
 
+        // 랭크 리스트 저장
         string saveValue = JsonConvert.SerializeObject(listUserScore);
         PlayerPrefs.SetString(scoreKey, saveValue);
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     public void CheckRank()
     {
         int rank = GetPlayerRank();
