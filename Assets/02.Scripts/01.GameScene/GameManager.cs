@@ -69,7 +69,7 @@ public class GameManager : MonoBehaviour
     {
         mainCam = Camera.main;
         CurrentDongleSet();
-        //SetScore();
+        SetScore();
     }
 
     void Update()

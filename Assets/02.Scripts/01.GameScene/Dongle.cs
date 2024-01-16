@@ -106,10 +106,12 @@ public class Dongle : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(onSpawn == true && collision.gameObject.CompareTag("DeadLine"))
-        {
-            lineContect = true;
-        }
+        ContactDeadLine(collision);
+    }
+
+    private void OnTriggerStay2D(Collider2D collision)
+    {
+        ContactDeadLine(collision);
     }
 
     private void OnTriggerExit2D(Collider2D collision)
@@ -118,6 +120,14 @@ public class Dongle : MonoBehaviour
         {
             lineContect = false;
             timeContactDeadLine = 0;
+        }
+    }
+
+    private void ContactDeadLine(Collider2D _collision)
+    {
+        if (onSpawn == true && _collision.gameObject.CompareTag("DeadLine"))
+        {
+            lineContect = true;
         }
     }
 

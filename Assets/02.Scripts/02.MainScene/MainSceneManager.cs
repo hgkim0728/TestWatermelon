@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,7 +8,7 @@ using static GameManager;
 
 public class MainSceneManager : MonoBehaviour
 {
-    [SerializeField] private Button btnSatartGame;
+    [SerializeField] private Button btnGameStart;
     [SerializeField] private Button btnRank;
     [SerializeField] private Button btnExit;
     [SerializeField] private Button btnRankViewExit;
@@ -29,10 +29,10 @@ public class MainSceneManager : MonoBehaviour
 
     private void Awake()
     {
-        #region ¹öÆ° ¼³Á¤
+        #region ë²„íŠ¼ ì„¤ì •
         MainSceneManager sc = GetComponent<MainSceneManager>();
 
-        btnSatartGame.onClick.AddListener(() =>
+        btnGameStart.onClick.AddListener(() =>
         {
             SceneManager.LoadSceneAsync((int)enumScene.PlayScene);
         });
@@ -49,6 +49,11 @@ public class MainSceneManager : MonoBehaviour
 #else
             Application.Quit();
 #endif
+        });
+
+        btnRankViewExit.onClick.AddListener(() =>
+        {
+            objRankView.SetActive(false);
         });
         #endregion
         SetRank();
@@ -87,7 +92,7 @@ public class MainSceneManager : MonoBehaviour
 
                 if (listScore.Count != 10)
                 {
-                    Debug.LogError($"¸®½ºÆ® ½ºÄÚ¾îÀÇ °¹¼ö°¡ ÀÌ»óÇÕ´Ï´Ù. ¸®½ºÆ® ½ºÄÚ¾îÀÇ °¹¼ö = {listScore.Count}");
+                    Debug.LogError($"ë¦¬ìŠ¤íŠ¸ ìŠ¤ì½”ì–´ì˜ ê°¯ìˆ˜ê°€ ì´ìƒí•©ë‹ˆë‹¤. ë¦¬ìŠ¤íŠ¸ ìŠ¤ì½”ì–´ì˜ ê°¯ìˆ˜ = {listScore.Count}");
                 }
             }
         }
@@ -112,6 +117,14 @@ public class MainSceneManager : MonoBehaviour
 
     private void CreateRankContents()
     {
+        int count = listScore.Count;
 
+        for(int i = 0; i < count; i++)
+        {
+            UserScore data = listScore[i];
+            GameObject obj = Instantiate(objRankContents, trsRankContents);
+            RankContents objSc = obj.GetComponent<RankContents>();
+            objSc.SetRankContents($"{i + 1}", $"{data.score}", $"{data.name}");
+        }
     }
 }

@@ -86,6 +86,7 @@ public class UIManager : MonoBehaviour
         gameManager.SetNewRank(name);
         buttonReplay.gameObject.SetActive(true);
         buttonExit.gameObject.SetActive(true);
+        inputFieldUserName.gameObject.SetActive(false);
         buttonScoreSave.SetActive(false);
     }
 

@@ -1,4 +1,4 @@
-using System.Collections;
+Ôªøusing System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
@@ -11,8 +11,8 @@ public class RankContents : MonoBehaviour
 
     public void SetRankContents(string _rank, string _score, string _name)
     {
-        textRank.text = _rank + "µÓ";
-        textScore.text = _score + " ¡°";
+        textRank.text = _rank + "Îì±";
+        textScore.text = _score + " Ï†ê";
         textName.text = _name;
     }
 }
