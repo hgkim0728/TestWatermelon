@@ -84,7 +84,7 @@ public class Dongle : MonoBehaviour
         if(onSpawn == false && collision.gameObject.CompareTag("Box") == false 
             && isDrop == true)
         {
-            gameManager.Spawn = true;
+            //gameManager.Spawn = true;
             gameManager.CurrentDongleSet();
             onSpawn = true;
         }
