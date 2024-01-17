@@ -11,8 +11,8 @@ public class GameManager : MonoBehaviour
     // 랭킹 저장을 위한 클래스
     public class UserScore
     {
-        public int score;   // 새로운 랭크를 달성한 유저의 점수
-        public string name; // 새로운 랭크를 달성한 유저의 이름
+        public int score;   // 랭크를 달성한 유저의 점수
+        public string name; // 랭크를 달성한 유저의 이름
     }
 
     [SerializeField, Tooltip("동글 프리팹 리스트")] List<GameObject> listDongleObj;
@@ -30,16 +30,16 @@ public class GameManager : MonoBehaviour
     // 유저 랭킹 저장 리스트
     private List<UserScore> listUserScore = new List<UserScore>();
 
-    private int curScore = 0;   // 현재 유저가 달성한 점수
+    private int curScore = 0;   // 현재 플레이어가 달성한 점수
 
     private int newRank = 0;    // 순위 내의 점수가 달성됐을 때 해당되는 랭크를 담을 변수
-    private string scoreKey = "ScoreKey";   // 유저 랭킹 저장 키
+    private string scoreKey = "ScoreKey";   // 유저 랭크 저장 키
 
     private bool isGameOver = false;    // 게임 오버인지 아닌지
     #endregion
 
     #region 프로퍼티
-    // 유저가 현재 달성한 점수의 프로퍼티
+    // 플레이어의 현재 점수의 프로퍼티
     public int Score
     {
         get { return curScore; }
@@ -62,7 +62,7 @@ public class GameManager : MonoBehaviour
     {
         mainCam = Camera.main;  // 메인 카메라 변수에 메인 카메라 넣기
         CurrentDongleSet();     // 떨어뜨릴 동글이 생성
-        SetUserRank();     // 이전에 달성했던 유저 랭크 점수를 불러와서 문제가 없는지 확인
+        SetUserRank();     // 이전에 달성했던 유저 랭크를 불러와서 문제가 없는지 확인
     }
 
     void Update()
@@ -100,6 +100,7 @@ public class GameManager : MonoBehaviour
     }
 
     /// <summary>
+    /// 동글이의 위치의 x값을 마우스의 x값으로 바꾸고
     /// 동글이가 화면 밖으로 나가지 않게 조절
     /// </summary>
     /// <param name="_mousePos">마우스 위치</param>
@@ -221,7 +222,7 @@ public class GameManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 게임이 종료 된 후 현재 유저가 달성한 점수가
+    /// 게임이 종료 된 후 플레이어가 달성한 점수가
     /// 랭크 내에 들었는지 확인
     /// </summary>
     /// <returns>랭크 내에 들었다면 달성한 랭크를 반환
@@ -234,7 +235,7 @@ public class GameManager : MonoBehaviour
         {
             UserScore userScore = listUserScore[i];
 
-            // 현재 유저의 점수가 랭크 i의 유저의 점수보다 높다면
+            // 플레이어의 점수가 랭크 i의 유저의 점수보다 높다면
             if(curScore > userScore.score)
             {
                 return i;
@@ -245,8 +246,8 @@ public class GameManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 현재 유저가 랭크 내에 들었고
-    /// 유저가 이름을 입력했다면
+    /// 플레이어가 랭크 내에 들었고
+    /// 플레이어가 이름을 입력했다면
     /// </summary>
     /// <param name="_name">새로 랭크를 달성한 유저의 이름</param>
     public void SetNewRank(string _name)
@@ -282,29 +283,36 @@ public class GameManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 
+    /// 게임오버 됐을 때 플레이어가 랭크 내에 들었는지 체크
     /// </summary>
     public void CheckRank()
     {
+        // 플레이어가 랭크 내에 들었다면 달성한 랭크
+        // 랭크 내에 들어가지 못했다면 -1
         int rank = GetPlayerRank();
 
+        // 랭크 내에 들어가지 못했다면
         if(rank == -1)
         {
-            uiManager.NotRank(curScore);
+            uiManager.NotRank(curScore);    // 이름 입력 및 저장을 생략하고 다시하기 & 나가기 버튼 활성화
         }
-        else
+        else// 랭크 내에 들어갔다면
         {
-            newRank = rank;
-            uiManager.NewRank(rank, curScore);
+            newRank = rank; // 달성한 랭크 전달
+            uiManager.NewRank(rank, curScore);  // 플레이어 이름 입력 및 저장으로 넘어감
         }
     }
 
+    /// <summary>
+    /// 동글이가 탈락선에 닿고 정해둔 시간이 지났을 때 호출
+    /// </summary>
     public void GameOver()
     {
+        // 게임오버된 상태가 아니라면
         if (isGameOver == false)
         {
-            uiManager.ActiveGameOverImg();
-            isGameOver = true;
+            uiManager.ActiveGameOverImg();  // 게임오버 이미지 활성화
+            isGameOver = true;  // 게임오버 상태로 전환
         }
     }
 }

@@ -10,7 +10,7 @@ public class UIManager : MonoBehaviour
     [SerializeField, Tooltip("점수 표시")] private TMP_Text textScore;
     [SerializeField, Tooltip("게임 종료 이미지")] private GameObject gameOverImg;
     [SerializeField, Tooltip("게임 종료 패널")] private GameObject gameOverPanel;
-    [SerializeField] private float timeActiveGameOverImg = 2.0f;
+    [SerializeField] private float timeActiveGameOverImg = 2.0f;    // 게임오버 이미지가 보이는 시간
 
     [Header("게임종료 패널 안의 UI들")]
     [SerializeField, Tooltip("랭킹 텍스트. 게임 점수 10위 내에 들어갈 때만 활성화")] private TMP_Text textRank;
@@ -20,9 +20,7 @@ public class UIManager : MonoBehaviour
     [SerializeField, Tooltip("게임 재시작 버튼")] private GameObject buttonReplay;
     [SerializeField, Tooltip("나가기 버튼")] private GameObject buttonExit;
 
-    GameManager gameManager;
-
-    private bool activeGameOverImg = false;
+    GameManager gameManager;    // 게임매니저
 
     void Start()
     {
@@ -31,72 +29,98 @@ public class UIManager : MonoBehaviour
 
     void Update()
     {
-        SetTextScore();
-
-        if(activeGameOverImg)
-        {
-            timeActiveGameOverImg -= Time.deltaTime;
-
-            if(timeActiveGameOverImg <= 0)
-            {
-                gameOverImg.SetActive(false);
-                activeGameOverImg = false;
-                gameManager.CheckRank();
-            }
-        }
+        SetTextScore();     // 현재 점수 표시
     }
 
+    /// <summary>
+    /// 현재 점수를 표시
+    /// </summary>
     private void SetTextScore()
     {
-        textScore.text = gameManager.Score.ToString();
+        textScore.text = gameManager.Score.ToString();  // 게임매니저에서 현재 점수를 가져와 텍스트로 표시
     }
 
+    /// <summary>
+    /// 게임오버 이미지 활성화
+    /// </summary>
     public void ActiveGameOverImg()
     {
-        gameOverImg.SetActive(true);
-        activeGameOverImg = true;
+        gameOverImg.SetActive(true);    // 게임오버 이미지 활성화
+
+        Invoke("SleepGameOverImg", timeActiveGameOverImg);  // 정해둔 시간이 지난 후 게임오버 이미지 비활성화
     }
 
+    /// <summary>
+    /// 게임오버 이미지 비활성화
+    /// </summary>
+    private void SleepGameOverImg()
+    {
+        gameOverImg.SetActive(false);   // 게임오버 이미지 비활성화
+        gameManager.CheckRank();    // 게임매니저에게 플러이어가 랭크 내에 들었는지 체크하게 하기
+    }
+
+    /// <summary>
+    /// 게임오버 패널 활성화
+    /// </summary>
+    /// <param name="_score">플레이어의 점수</param>
     private void SetGameOverPanel(int _score)
     {
-        textGameOverScore.text = _score.ToString();
-        gameOverPanel.SetActive(true);
+        textGameOverScore.text = _score.ToString();     // 플레이어가 달성한 점수 표시
+        gameOverPanel.SetActive(true);  // 게임오버 패널 활성화
     }
 
+    /// <summary>
+    /// 플레이어가 랭크 내에 들었을 때 호출
+    /// </summary>
+    /// <param name="_rank">플레이어가 달성한 랭크</param>
+    /// <param name="_score">플레이어의 점수</param>
     public void NewRank(int _rank, int _score)
     {
-        textRank.text = (_rank + 1).ToString();
-        textRank.gameObject.SetActive(true);
-        inputFieldUserName.text = string.Empty;
-        inputFieldUserName.gameObject.SetActive(true);
-        buttonScoreSave.gameObject.SetActive(true);
-        SetGameOverPanel(_score);
+        textRank.text = (_rank + 1).ToString();     // 플레이어가 달성한 랭크 표시
+        textRank.gameObject.SetActive(true);    // 랭크 텍스트 활성화
+        inputFieldUserName.text = string.Empty;     // 플레이어 이름 입력창 비우기
+        inputFieldUserName.gameObject.SetActive(true);  // 플레이어 이름 입력 인풋필드 활성화
+        buttonScoreSave.gameObject.SetActive(true);     // 랭크 저장 버튼 활성화
+        SetGameOverPanel(_score);   // 게임오버 패널 활성화
     }
 
+    /// <summary>
+    /// 플레이어가 랭크 내에 들어가지 못했을 때 호출
+    /// </summary>
+    /// <param name="_score">플레이어의 점수</param>
     public void NotRank(int _score)
     {
-        buttonReplay.gameObject.SetActive(true);
-        buttonExit.gameObject.SetActive(true);
-        SetGameOverPanel(_score);
+        buttonReplay.gameObject.SetActive(true);    // 다시하기 버튼 활성화
+        buttonExit.gameObject.SetActive(true);  // 나가기 버튼 활성화
+        SetGameOverPanel(_score);   // 게임오버 패널 활성화
     }
 
+    /// <summary>
+    /// 랭크 내에 들어간 플레이어가
+    /// 이름을 입력하고 저장 버튼을 누르면 호출됨
+    /// </summary>
     public void SaveNewRank()
     {
-        string name = inputFieldUserName.text;
-        gameManager.SetNewRank(name);
-        buttonReplay.gameObject.SetActive(true);
-        buttonExit.gameObject.SetActive(true);
-        inputFieldUserName.gameObject.SetActive(false);
-        buttonScoreSave.SetActive(false);
+        string name = inputFieldUserName.text;  // 인풋필드에 입력된 플레이어 이름 가져오기
+        gameManager.SetNewRank(name);   // 새로운 랭크 저장
+        buttonReplay.gameObject.SetActive(true);    // 다시하기 버튼 활성화
+        buttonExit.gameObject.SetActive(true);  // 나가기 버튼 활성화
+        inputFieldUserName.gameObject.SetActive(false);     // 플레이어 이름 입력 인풋필드 비활성화
+        buttonScoreSave.SetActive(false);   // 저장 버튼 비활성화
     }
 
+    /// <summary>
+    /// 다시하기 버튼을 눌렀을 때 실행
+    /// </summary>
     public void Replay()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        // 현재 씬 다시 불러오기
+        SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().buildIndex);
     }
 
+    // 나가기 버튼을 눌렀을 때 실행
     public void Exit()
     {
-        SceneManager.LoadScene(0);
+        SceneManager.LoadSceneAsync(0);  // 메인씬으로 이동
     }
 }
