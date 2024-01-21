@@ -18,21 +18,24 @@ public class GameManager : MonoBehaviour
     [SerializeField, Tooltip("동글 프리팹 리스트")] List<GameObject> listDongleObj;
     [SerializeField, Tooltip("동글 오브젝트가 들어갈 레이어")] private Transform layerDongle;
     [SerializeField, Tooltip("떨어뜨릴 동글이 중 가장 큰 동글 인덱스(+1해서 입력해야 함)")] private int maxCurDongleIdx = 4;
-    private GameObject curDongle;   // 이번에 떨어뜨릴 동글이
-    private Dongle curDongleSc; // 이번에 떨어뜨릴 동글이의 동글 스크립트
 
     [SerializeField, Tooltip("UI 매니저")] private UIManager uiManager;
 
-    private Camera mainCam;     // 메인 카메라
 
     [SerializeField, Tooltip("선에 닿고 이만큼의 시간이 지나면 게임 오버")] private float timeGameOver = 2.0f;
 
     // 유저 랭킹 저장 리스트
     private List<UserScore> listUserScore = new List<UserScore>();
 
-    private int curScore = 0;   // 현재 플레이어가 달성한 점수
+    private Camera mainCam;     // 메인 카메라
 
+    private GameObject curDongle;   // 이번에 떨어뜨릴 동글이
+    private Dongle curDongleSc; // 이번에 떨어뜨릴 동글이의 동글 스크립트
+
+    private int nextDongleIdx;  // 다음에 떨어뜨릴 동글이 번호
+    private int curScore = 0;   // 현재 플레이어가 달성한 점수
     private int newRank = 0;    // 순위 내의 점수가 달성됐을 때 해당되는 랭크를 담을 변수
+
     private string scoreKey = "ScoreKey";   // 유저 랭크 저장 키
 
     private bool isGameOver = false;    // 게임 오버인지 아닌지
@@ -61,8 +64,9 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         mainCam = Camera.main;  // 메인 카메라 변수에 메인 카메라 넣기
-        CurrentDongleSet();     // 떨어뜨릴 동글이 생성
         SetUserRank();     // 이전에 달성했던 유저 랭크를 불러와서 문제가 없는지 확인
+        NextDongleSet();
+        CurrentDongleSet();     // 떨어뜨릴 동글이 생성
     }
 
     void Update()
@@ -131,13 +135,24 @@ public class GameManager : MonoBehaviour
     public void CurrentDongleSet()
     {
         // 가장 작은 동글이부터 떨어뜨릴 수 있는 가장 큰 동글이 인덱스 중 랜덤으로 선정
-        int idx = Random.Range(0, maxCurDongleIdx);
+        int idx = nextDongleIdx;
+        NextDongleSet();
+        uiManager.SetNextDongleImg(nextDongleIdx);
+
         // 동글이 생성
-        curDongle = Instantiate(listDongleObj[idx], new Vector2(0, 4.5f), Quaternion.identity, layerDongle);
+        curDongle = Instantiate(listDongleObj[idx], new Vector2(0, 4.0f), Quaternion.identity, layerDongle);
         curDongleSc = curDongle.GetComponent<Dongle>();     // 동글이 스크립트 가져오기
         curDongleSc.DongleIndex = idx;      // 생성된 동글이의 번호 전달(자신이 몇 번째로 큰 동글인지를 알려주는 용도)
         curDongleSc.DongleScore = SetDongleScore(idx);  // 합체할 때 획득할 점수 전달
         curDongleSc.TimeGameOver = timeGameOver;    // 탈락선에 몇 초 동안 접촉하면 탈락인지 전달
+    }
+
+    /// <summary>
+    /// 다음으로 떨어뜨릴 동글이 설정
+    /// </summary>
+    private void NextDongleSet()
+    {
+        nextDongleIdx = Random.Range(0, maxCurDongleIdx);
     }
 
     /// <summary>

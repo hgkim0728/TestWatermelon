@@ -7,7 +7,10 @@ using UnityEngine.SceneManagement;
 
 public class UIManager : MonoBehaviour
 {
+    #region 변수
     [SerializeField, Tooltip("점수 표시")] private TMP_Text textScore;
+    [SerializeField, Tooltip("동글이 스프라이트")] List<Sprite> dongleSprite;
+    [SerializeField, Tooltip("다음에 떨어뜨릴 동글이 표시")] Image imgNextDongle;
     [SerializeField, Tooltip("게임 종료 이미지")] private GameObject gameOverImg;
     [SerializeField, Tooltip("게임 종료 패널")] private GameObject gameOverPanel;
     [SerializeField] private float timeActiveGameOverImg = 2.0f;    // 게임오버 이미지가 보이는 시간
@@ -21,6 +24,7 @@ public class UIManager : MonoBehaviour
     [SerializeField, Tooltip("나가기 버튼")] private GameObject buttonExit;
 
     GameManager gameManager;    // 게임매니저
+    #endregion
 
     void Start()
     {
@@ -38,6 +42,15 @@ public class UIManager : MonoBehaviour
     private void SetTextScore()
     {
         textScore.text = gameManager.Score.ToString();  // 게임매니저에서 현재 점수를 가져와 텍스트로 표시
+    }
+
+    /// <summary>
+    /// 다음으로 떨어뜨릴 동글이 표시
+    /// </summary>
+    /// <param name="_nextDongleIdx"></param>
+    public void SetNextDongleImg(int _nextDongleIdx)
+    {
+        imgNextDongle.sprite = dongleSprite[_nextDongleIdx];
     }
 
     /// <summary>
