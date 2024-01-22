@@ -111,6 +111,7 @@ public class GameManager : MonoBehaviour
     private void CheckDonglePosition(Vector2 _mousePos)
     {
         Vector2 pos = mainCam.WorldToViewportPoint(_mousePos);  // 마우스의 위치를 월드에서 뷰포트 기준으로 변경
+        pos = new Vector2(pos.x, 4.0f);
 
         // 마우스 위치가 오른쪽 화면 밖이라면 동글이가 오른쪽 화면 끝에 붙도록
         if (pos.x > 1 - (curDongle.transform.localScale.x * 0.1f))
