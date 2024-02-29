@@ -105,7 +105,8 @@ public class Dongle : MonoBehaviour
         }
 
         // 충돌한 대상이 동글이고 자신이 아직 같은 크기의 동글이와 충돌하지 않았다면
-        if(collision.gameObject.CompareTag("Dongle") && isMatch == false)
+        if(collision.gameObject.CompareTag("Dongle") && isMatch == false
+            && gameManager.IsGameOver == false)
         {
             Dongle sc = collision.gameObject.GetComponent<Dongle>();    // 충돌한 상대 동글이의 스크립트 가져오기
             int idx = sc.DongleIndex;   // 상대가 몇 번째 동글이인지 가져오기

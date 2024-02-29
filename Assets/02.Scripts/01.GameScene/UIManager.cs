@@ -89,7 +89,7 @@ public class UIManager : MonoBehaviour
     /// <param name="_score">플레이어의 점수</param>
     public void NewRank(int _rank, int _score)
     {
-        textRank.text = (_rank + 1).ToString();     // 플레이어가 달성한 랭크 표시
+        textRank.text = (_rank + 1).ToString() + "등";     // 플레이어가 달성한 랭크 표시
         textRank.gameObject.SetActive(true);    // 랭크 텍스트 활성화
         inputFieldUserName.text = string.Empty;     // 플레이어 이름 입력창 비우기
         inputFieldUserName.gameObject.SetActive(true);  // 플레이어 이름 입력 인풋필드 활성화

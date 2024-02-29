@@ -47,6 +47,12 @@ public class GameManager : MonoBehaviour
     {
         get { return curScore; }
     }
+
+    // 게임오버인지 아닌지의 프로퍼티
+    public bool IsGameOver
+    {
+        get { return isGameOver; }
+    }
     #endregion
 
     void Awake()
